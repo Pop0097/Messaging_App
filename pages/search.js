@@ -6,40 +6,38 @@ import { MaterialIcons } from '@expo/vector-icons';
 import ChatForm from '../components/chatform';
 import UserCard from '../components/usercard';
 
-function ChatList({ navigation }) {
+function SearchList({ navigation }) {
 
-    const [{ userDoc }, dispatch] = useStateValue(); 
+    const [{ userDoc, search }, dispatch] = useStateValue(); 
     const [searchResults, setSearchResults] = useState([]);
 
     //Trying to get the search feature to work so we can create a chat. 
-    const createChat = ({ email }) => {
 
-        console.log(email);
+    console.log("Search ", search);
 
-        dispatch({
-            type:"set_search",
-            search: email,
-        })
+    var userRef = db.collection("users");
+    var query = userRef.where("email", '==', search).limit(10);
 
-        navigation.navigate("Search");
-    }
+    useEffect(() => {
+        query.onSnapshot((snapshot) =>
+        setSearchResults(snapshot.docs.map((doc) => doc.data()))
+        );
+    }, [searchResults]);
 
     return(
         <View>
-         
-            <ChatForm createChat={createChat} />
 
-            <TouchableOpacity onPress={() => navigation.navigate("Chat")} >
+            <Text>This is Search!!</Text>
+            {searchResults.map((user) => (
                 <View>
-                    <Text> This is the Chat List! </Text>
+                    <Text>Result: {user.email}</Text> 
                 </View>
-            </TouchableOpacity>
-            <Text>{ userDoc.name } </Text> 
+            ))}
         </View>
     );
 }
 
-export default ChatList;
+export default SearchList;
 
 const styles = StyleSheet.create({
     modalContent: {

@@ -25,7 +25,7 @@ const reducer = (state, action) => {
 		case "set_search":
 			return {
 				...state,
-				search: action.search_value,
+				search: action.search,
             };
             
 		default: 
