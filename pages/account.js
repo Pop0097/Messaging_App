@@ -6,7 +6,7 @@ import db, { provider, auth } from '../firebase';
 function Account() {
     return(
         <View>
-            <Text> This is the Chat </Text>
+            <Text> This is the Account </Text>
         </View>
     );
 }
