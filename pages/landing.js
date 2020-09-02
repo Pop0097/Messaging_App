@@ -1,9 +1,8 @@
 import React from 'react';
-import { Text, View, TouchableOpacity } from 'react-native';
 import db, { provider, auth } from '../firebase';
 import { useStateValue } from '../stateprovider';
 
-import '../styles/landing.css';
+// import '../styles/landing.css';
 
 
 function Landing({ navigation }) {
@@ -64,13 +63,14 @@ function Landing({ navigation }) {
                     navigation.navigate("AuthenticatedDrawer"); //goes to home page (chatlist.js)
                 });
         });
+
     }
 
     return(
-        <View className="LandingContainer">
+        <View style={LandingStyles.LandingContainer}>
             <TouchableOpacity onPress={authenticate}>
-                <View className="Button-Google">
-                    <Text className="ButtonText">Sign in with Google</Text>
+                <View style={LandingStyles.ButtonGoogle}>
+                    <Text style={LandingStyles.ButtonText}>Sign in with Google</Text>
                 </View>
             </TouchableOpacity>
             <Text>If you do not have an account, you can still sign in using Google!</Text>
@@ -79,3 +79,25 @@ function Landing({ navigation }) {
 }
 
 export default Landing; 
+
+const LandingStyles = StyleSheet.create({
+    LandingContainer: {
+        width: '100%',
+        height: '100%',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    ButtonGoogle: {
+        marginTop: 50,
+        minWidth: 300,
+        width: '80%',
+        backgroundColor: '#b0b0b0',
+        textAlign: 'center',
+        padding: 15,
+        borderRadius: 7,
+    },
+    ButtonText: {
+        fontSize: 18,
+    }
+});

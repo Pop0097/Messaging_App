@@ -1,7 +1,7 @@
 import React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import '../styles/header.css';
+import { HeaderStyles } from '../styles/headerstyle';
 
 function Header({ navigation, title }) {
     
@@ -10,20 +10,13 @@ function Header({ navigation, title }) {
       }
     
     return(
-        <View className="HeaderContainer">
-            <MaterialIcons name='menu' size={28} onPress={openMenu} style={styles.icon} />
+        <View style={HeaderStyles.HeaderContainer}>
+            <MaterialIcons name='menu' size={28} onPress={openMenu} style={HeaderStyles.icon} />
             <View>
-                <Text className="HeaderText"> { title } </Text>
+                <Text style={HeaderStyles.HeaderText}> { title } </Text>
             </View>
         </View>
     );
 }
 
 export default Header;
-
-const styles = StyleSheet.create({
-    icon: {
-      position: 'absolute',
-      left: 16,
-    }
-});
