@@ -1,13 +1,15 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, TouchableOpacity } from 'react-native';
 import db, { provider, auth } from '../firebase';
 
 
-function ChatList() {
+function ChatList({ navigation }) {
     return(
-        <View>
-            <Text> This is the Chat List! </Text>
-        </View>
+        <TouchableOpacity onPress={() => navigation.navigate("Chat")} >
+            <View>
+                <Text> This is the Chat List! </Text>
+            </View>
+        </TouchableOpacity>
     );
 }
 

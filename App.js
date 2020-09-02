@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import Navigator from './routes/drawer'; //gets app countainer
+import Navigator from './routes/switch'; //gets app countainer
 
 function App() {
   return (

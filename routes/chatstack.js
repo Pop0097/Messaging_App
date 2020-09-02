@@ -5,6 +5,7 @@ import ChatList from '../pages/chatlist';
 import Chat from '../pages/chat';
 
 import Header from '../components/header';
+import Header_No_Drawer from '../components/headernodrawer';
 
 const screens = {
     ChatList: {
@@ -17,9 +18,9 @@ const screens = {
     },
     Chat: {
         screen: Chat,
-        navigationOptions: ({ navigation }) => {
+        navigationOptions: () => {
             return {
-                title: "Chat"
+                headerTitle: () => <Header_No_Drawer title="Chat" />
             }
         }
     }
