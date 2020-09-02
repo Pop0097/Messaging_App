@@ -1,3 +1,5 @@
+//Use switch navigtion to move between landing page (authentication) and chat page 
+
 import React from 'react';
 import { createSwitchNavigator } from 'react-navigation';
 import { createAppContainer } from 'react-navigation';
