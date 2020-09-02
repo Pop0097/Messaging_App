@@ -3,14 +3,14 @@ import { createStackNavigator } from 'react-navigation-stack';
 
 import Landing from '../pages/landing';
 
-import Header_No_Drawer from '../components/headernodrawer';
+import Header from '../components/header';
 
 const screens = {
     Landing: {
         screen: Landing,
         navigationOptions: () => { //creates a function that returns the custom header compoenntn. This is done so header.js can access "navigation"
             return {
-                headerTitle: () => <Header_No_Drawer title="Welcome to Message" />
+                headerTitle: () => <Header drawer="false" title="Welcome to Message" />
             }
         }
     },

@@ -1,13 +1,11 @@
 import React from 'react';
 import db, { provider, auth } from '../firebase';
 import { useStateValue } from '../stateprovider';
-
-// import '../styles/landing.css';
-
+import { Text, View, StyleSheet, TouchableOpacity } from 'react-native'; 
 
 function Landing({ navigation }) {
 
-    //const [state, dispatch] = useStateValue();
+    const [state, dispatch] = useStateValue();
 
     function getDocument(email) {
 		return new Promise((resolve, reject) => {
@@ -37,6 +35,7 @@ function Landing({ navigation }) {
                         dispatch({ //stores user profile picture
                             type: "set_pic",
                             userPic: userDocument.profilePicture,
+                            userStatus: true,
                         }) 
                     } else { //if user doc does not already exist in Firestore (new user)
                         db.collection("users") //creates new user in database
@@ -51,7 +50,8 @@ function Landing({ navigation }) {
 									console.log("B", doc);
 									dispatch({
 										type: "set_pic",
-										userPic: result.user.photoURL,
+                                        userPic: result.user.photoURL,
+                                        userStatus: true,
 									});
 									dispatch({
 										type: "set_doc",
@@ -63,7 +63,6 @@ function Landing({ navigation }) {
                     navigation.navigate("AuthenticatedDrawer"); //goes to home page (chatlist.js)
                 });
         });
-
     }
 
     return(

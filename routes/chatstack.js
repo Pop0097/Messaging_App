@@ -5,14 +5,13 @@ import ChatList from '../pages/chatlist';
 import Chat from '../pages/chat';
 
 import Header from '../components/header';
-import Header_No_Drawer from '../components/headernodrawer';
 
 const screens = {
     ChatList: {
         screen: ChatList,
         navigationOptions: ({ navigation }) => {
             return {
-                headerTitle: () => <Header navigation={navigation} title="Message" />
+                headerTitle: () => <Header navigation={navigation} title="Message" drawer="true" />
             }
         }
     },
@@ -20,7 +19,7 @@ const screens = {
         screen: Chat,
         navigationOptions: () => {
             return {
-                headerTitle: () => <Header_No_Drawer title="Chat" />
+                headerTitle: () => <Header title="Chat" drawer="false"/>
             }
         }
     }

@@ -10,7 +10,7 @@ const screens = {
         screen: Account,
         navigationOptions: ({ navigation }) => {
             return {
-                headerTitle: () => <Header navigation={navigation} title="Account" />
+                headerTitle: () => <Header navigation={navigation} title="Account" drawer="true"/>
             }
         }
     },
