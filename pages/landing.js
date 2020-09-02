@@ -38,10 +38,14 @@ function Landing({ navigation }) {
                             userStatus: true,
                         }) 
                     } else { //if user doc does not already exist in Firestore (new user)
+                        var uname = result.user.email.substr(0, result.user.email.indexOf("@"));
+                        console.log(uname);
+
                         db.collection("users") //creates new user in database
 							.doc(result.user.email)
 							.set({
-								name: result.user.displayName,
+                                name: result.user.displayName,
+                                username: uname,
 								email: result.user.email,
 								profilePicture: result.user.photoURL,
 							})

@@ -8,19 +8,19 @@ import UserCard from '../components/usercard';
 
 function ChatList({ navigation }) {
 
-    const [{ userDoc }, dispatch] = useStateValue(); 
+    const [{ userDoc, search }, dispatch] = useStateValue(); 
     const [searchResults, setSearchResults] = useState([]);
 
     //Trying to get the search feature to work so we can create a chat. 
     const createChat = ({ email }) => {
 
-        console.log(email);
+        // console.log(email);
 
         dispatch({
             type:"set_search",
             search: email,
         })
-
+        
         navigation.navigate("Search");
     }
 
@@ -28,6 +28,7 @@ function ChatList({ navigation }) {
         <View>
          
             <ChatForm createChat={createChat} />
+            
 
             <TouchableOpacity onPress={() => navigation.navigate("Chat")} >
                 <View>

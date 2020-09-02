@@ -19,7 +19,7 @@ function ChatForm({ createChat }) {
                 {(props) => (
                     <View>
                         <TextInput 
-                            placeholder="User Email"
+                            placeholder="Username"
                             onChangeText={props.handleChange('email')}
                             value={props.values.email}
                             onBlur={props.handleBlur('email')}

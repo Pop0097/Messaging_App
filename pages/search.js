@@ -16,7 +16,7 @@ function SearchList({ navigation }) {
     console.log("Search ", search);
 
     var userRef = db.collection("users");
-    var query = userRef.where("email", '==', search).limit(10);
+    var query = userRef.where("username", '==', search).limit(25);
 
     useEffect(() => {
         query.onSnapshot((snapshot) =>
