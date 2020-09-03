@@ -5,16 +5,21 @@ import { createSwitchNavigator } from 'react-navigation';
 import { createAppContainer } from 'react-navigation';
 
 import AuthenticatedDrawer from './drawer';
-import LandingStack from './landingstack';
+import LandingScreen from '../pages/landing';
+import LoadingScreen from '../pages/loadingscreen';
 
 const switcher = createSwitchNavigator(
     {
-        LandingStack: LandingStack,
+        LoadingScreen: LoadingScreen,
+        LandingStack: LandingScreen,
         AuthenticatedDrawer: AuthenticatedDrawer,
     },
     {
-        initialRouteName: 'LandingStack'
+        initialRouteName: 'LoadingScreen'
     }
+
 )
 
-export default createAppContainer(switcher);
+const Navigator = createAppContainer(switcher);
+
+export default Navigator;
