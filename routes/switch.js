@@ -6,14 +6,13 @@ import { createAppContainer } from 'react-navigation';
 
 import AuthenticatedDrawer from './drawer';
 import LandingStack from './landingstack';
+import LoadingScreen from '../pages/loadingscreen.js';
 
 const switcher = createSwitchNavigator(
     {
+        LoadingScreen: LoadingScreen,
         LandingStack: LandingStack,
         AuthenticatedDrawer: AuthenticatedDrawer,
-    },
-    {
-        initialRouteName: 'LandingStack'
     }
 )
 
