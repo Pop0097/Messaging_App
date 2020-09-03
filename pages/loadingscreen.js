@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, ActivityIndicator } from 'react-native';
-import db, { provider, auth } from '../firebase';
+import { Text, View, ActivityIndicator, StyleSheet } from 'react-native';
 import firebase from 'firebase';
 
 class LoadingScreen extends Component { 
@@ -21,8 +20,9 @@ class LoadingScreen extends Component {
 
     render(){
         return(
-            <View>
+            <View style={styles.container}>
                 <ActivityIndicator size="large" />
+                <Text>Loading App</Text> 
             </View>
         )
     }
@@ -31,3 +31,10 @@ class LoadingScreen extends Component {
 
 export default LoadingScreen;
  
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
+    }
+});

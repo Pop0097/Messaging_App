@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import db, { provider, auth } from '../firebase';
 import { useStateValue } from '../stateprovider';
-import { Text, View, StyleSheet, TouchableOpacity } from 'react-native'; 
+import { Text, View, StyleSheet, TouchableOpacity} from 'react-native'; 
 import * as Google from 'expo-google-app-auth';
 import firebase from 'firebase';
+
 
 class Landing extends Component {
 
@@ -32,7 +33,7 @@ class Landing extends Component {
             if (!this.isUserEqual(googleUser, firebaseUser)) {
                 // Build Firebase credential with the Google ID token.
                 var credential = firebase.auth.GoogleAuthProvider.credential(
-                    googleUser.id_token,
+                    googleUser.idToken,
                     googleUser.accessToken,
                 );
                 // Sign in with credential from the Google user.
@@ -42,13 +43,16 @@ class Landing extends Component {
 
                         if(result.additionalUserInfo.isNewUser) {
                             db.collection("users").doc(result.user.email).set({
+                                id: result.user.uid,
                                 email: result.user.email,
                                 username: result.user.email.substr(0, result.user.email.indexOf("@")),
                                 name: result.additionalUserInfo.profile.name,
                                 firstName: result.additionalUserInfo.profile.given_name,
+                                lastName: result.additionalUserInfo.profile.family_name,
                                 profilePicture: result.additionalUserInfo.profile.picture,
                                 created_at: Date.now(),
                                 last_logged_in: Date.now(),
+                                search_keys: [result.user.email, result.user.email.substr(0, result.user.email.indexOf("@")), result.additionalUserInfo.profile.given_name, result.additionalUserInfo.profile.family_name, result.additionalUserInfo.profile.given_name.toLowerCase(), result.additionalUserInfo.profile.family_name.toLowerCase(), result.additionalUserInfo.profile.given_name.toUpperCase(), result.additionalUserInfo.profile.family_name.toUpperCase()]
                             })
                             .then(function(snapshot) {
                                 console.log("Snapshot: ", snapshot);
@@ -75,6 +79,7 @@ class Landing extends Component {
     }
 
     signInWithGoogleAsync = async() => {
+        console.log("Signing in");
         try {
             const result = await Google.logInAsync({
                 //androidClientId: YOUR_CLIENT_ID_HERE,
@@ -85,7 +90,7 @@ class Landing extends Component {
         
             if (result.type === 'success') {
                 this.onSignIn(result);
-                return keys.accessToken;
+                return result.accessToken;
             } else {
                 return { cancelled: true };
             }
