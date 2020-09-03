@@ -5,12 +5,10 @@ import { Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 import * as Google from 'expo-google-app-auth';
 import firebase from 'firebase';
 
+function Landing({navigation}) {
+    const [state, dispatch] = useStateValue();
 
-class Landing extends Component {
-
-    // const [state, dispatch] = useStateValue();
-
-    isUserEqual = (googleUser, firebaseUser) => {
+    const isUserEqual = (googleUser, firebaseUser) => {
         if (firebaseUser) {
             var providerData = firebaseUser.providerData;
             for (var i = 0; i < providerData.length; i++) {
@@ -24,13 +22,25 @@ class Landing extends Component {
         return false;
     }
 
-    onSignIn = (googleUser) => {
+    function getDocument(email) {
+		return new Promise((resolve, reject) => {
+			var userDocument;
+			db.collection("users").doc(email).get().then(documentSnapshot => {
+				if(documentSnapshot.exists) {
+					userDocument = documentSnapshot.data(); 
+					resolve(userDocument);
+				} 
+			});
+		})
+	}
+
+    const onSignIn = (googleUser) => {
         console.log('Google Auth Response', googleUser);
         // We need to register an Observer on Firebase Auth to make sure auth is initialized.
         var unsubscribe = firebase.auth().onAuthStateChanged(function(firebaseUser) {
             unsubscribe();
             // Check if we are already signed-in Firebase with the correct user.
-            if (!this.isUserEqual(googleUser, firebaseUser)) {
+            if (!isUserEqual(googleUser, firebaseUser)) {
                 // Build Firebase credential with the Google ID token.
                 var credential = firebase.auth.GoogleAuthProvider.credential(
                     googleUser.idToken,
@@ -38,7 +48,7 @@ class Landing extends Component {
                 );
                 // Sign in with credential from the Google user.
                 firebase.auth().signInWithCredential(credential)
-                    .then(function(result) {
+                    .then((result) => {
                         console.log("User signed in");
 
                         if(result.additionalUserInfo.isNewUser) {
@@ -54,15 +64,39 @@ class Landing extends Component {
                                 last_logged_in: Date.now(),
                                 search_keys: [result.user.email, result.user.email.substr(0, result.user.email.indexOf("@")), result.additionalUserInfo.profile.given_name, result.additionalUserInfo.profile.family_name, result.additionalUserInfo.profile.given_name.toLowerCase(), result.additionalUserInfo.profile.family_name.toLowerCase(), result.additionalUserInfo.profile.given_name.toUpperCase(), result.additionalUserInfo.profile.family_name.toUpperCase()]
                             })
-                            .then(function(snapshot) {
-                                console.log("Snapshot: ", snapshot);
+                            .then(() => {
+                                getDocument(result.user.email).then((doc) => { //gets new user's document
+									dispatch({
+										type: "set_pic",
+                                        userPic: result.user.photoURL,
+                                        userStatus: true,
+									});
+									dispatch({
+										type: "set_doc",
+										userDoc: doc,
+									});
+								})
+                                
                             })
                         } else {
                             db.collection("users").doc(result.user.email).update({
                                 last_logged_in: Date.now(),
                             })
+                            db.collection("users").doc(result.user.email).get()
+                                .then((docSnapshot) => {
+                                    var userDocument = docSnapshot.data();
+                                    dispatch({ //stores user document
+                                        type:"set_doc",
+                                        userDoc: userDocument,
+                                    });
+                                    dispatch({ //stores user profile picture
+                                        type: "set_pic",
+                                        userPic: userDocument.profilePicture,
+                                        userStatus: true,
+                                    })
+                                });
                         }
-                    }).catch(function(error) {
+                    }).catch((error) => {
                         // Handle Errors here.
                         var errorCode = error.code;
                         var errorMessage = error.message;
@@ -75,10 +109,10 @@ class Landing extends Component {
             } else {
                 console.log('User already signed-in Firebase.');
             }
-        }.bind(this));
+        });
     }
 
-    signInWithGoogleAsync = async() => {
+    const signInWithGoogleAsync = async() => {
         console.log("Signing in");
         try {
             const result = await Google.logInAsync({
@@ -89,7 +123,7 @@ class Landing extends Component {
             });
         
             if (result.type === 'success') {
-                this.onSignIn(result);
+                onSignIn(result);
                 return result.accessToken;
             } else {
                 return { cancelled: true };
@@ -98,82 +132,19 @@ class Landing extends Component {
             return { error: true };
         }
     }
-      
 
-    // function getDocument(email) {
-	// 	return new Promise((resolve, reject) => {
-	// 		var userDocument;
-	// 		db.collection("users").doc(email).get().then(documentSnapshot => {
-	// 			if(documentSnapshot.exists) {
-	// 				userDocument = documentSnapshot.data(); 
-	// 				resolve(userDocument);
-	// 			} 
-	// 		});
-	// 	})
-	// }
+    return(
+        <View style={LandingStyles.LandingContainer}>
+            <TouchableOpacity onPress={signInWithGoogleAsync}>
+                <View style={LandingStyles.ButtonGoogle}>
+                    <Text style={LandingStyles.ButtonText}>Sign in with Google</Text>
+                </View>
+            </TouchableOpacity>
+            <Text>If you do not have an account, you can still sign in using Google!</Text>
+        </View>
+    );
 
-    // const authenticate = (event) => {
-    //     auth.signInWithPopup(provider).then((result) => {
-    //         db.collection("users").doc(result.user.email).get()
-    //             .then((docSnapshot) => { //if user document already exists in Firestore
-
-    //                 console.log(result)
-
-    //                 if(docSnapshot.exists) {
-    //                     var userDocument = docSnapshot.data();
-    //                     dispatch({ //stores user document
-    //                         type:"set_doc",
-    //                         userDoc: userDocument,
-    //                     });
-    //                     dispatch({ //stores user profile picture
-    //                         type: "set_pic",
-    //                         userPic: userDocument.profilePicture,
-    //                         userStatus: true,
-    //                     }) 
-    //                 } else { //if user doc does not already exist in Firestore (new user)
-    //                     var uname = result.user.email.substr(0, result.user.email.indexOf("@"));
-    //                     console.log(uname);
-
-    //                     db.collection("users") //creates new user in database
-	// 						.doc(result.user.email)
-	// 						.set({
-    //                             name: result.user.displayName,
-    //                             username: uname,
-	// 							email: result.user.email,
-	// 							profilePicture: result.user.photoURL,
-	// 						})
-	// 						.then(() => {
-	// 							getDocument(result.user.email).then((doc) => { //gets new user's document
-	// 								console.log("B", doc);
-	// 								dispatch({
-	// 									type: "set_pic",
-    //                                     userPic: result.user.photoURL,
-    //                                     userStatus: true,
-	// 								});
-	// 								dispatch({
-	// 									type: "set_doc",
-	// 									userDoc: doc,
-	// 								});
-	// 							})
-	// 						})
-    //                 }
-    //                 navigation.navigate("AuthenticatedDrawer"); //goes to home page (chatlist.js)
-    //             });
-    //     });
-    // }
-
-    render() {
-        return(
-            <View style={LandingStyles.LandingContainer}>
-                <TouchableOpacity onPress={() => this.signInWithGoogleAsync()}>
-                    <View style={LandingStyles.ButtonGoogle}>
-                        <Text style={LandingStyles.ButtonText}>Sign in with Google</Text>
-                    </View>
-                </TouchableOpacity>
-                <Text>If you do not have an account, you can still sign in using Google!</Text>
-            </View>
-        );
-    }
+    
 }
 
 export default Landing; 
