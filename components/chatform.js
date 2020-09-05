@@ -8,13 +8,13 @@ const chatSchema = yup.object({
     email: yup.string().required(),
 })
 
-function ChatForm({ createChat }) {
+function ChatForm({ findUsers }) {
     return(
         <View>
             <Formik
                 initialValues={{email: ''}}
                 validationSchema={chatSchema}
-                onSubmit={(values, actions) => {actions.resetForm(); createChat(values);}}
+                onSubmit={(values, actions) => {actions.resetForm(); findUsers(values);}}
             >   
                 {(props) => (
                     <View>
@@ -22,6 +22,7 @@ function ChatForm({ createChat }) {
                             placeholder="Username"
                             onChangeText={props.handleChange('email')}
                             value={props.values.email}
+                            autoCapitalize = 'none'
                             onBlur={props.handleBlur('email')}
                         />
 
