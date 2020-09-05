@@ -5,7 +5,6 @@ const initialState = {
 	userPic: "",
     search: "",
 	userDoc: "",
-	userChatsWith: []
 };
 
 const reducer = (state, action) => {
@@ -23,12 +22,6 @@ const reducer = (state, action) => {
 				userDoc: action.userDoc,
 			}
 		
-		case "set_chats":
-			return {
-				...state,
-				userChatsWith: action.userChatsWith,
-			}
-            
 		case "set_search":
 			return {
 				...state,

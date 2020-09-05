@@ -77,10 +77,6 @@ function Landing({navigation}) {
 										type: "set_doc",
                                         userDoc: doc,
                                     });
-                                    dispatch({
-                                        type: "set_chats",
-                                        userChatsWith: [],
-                                    });
 								})
                             })
                         } else {
@@ -98,10 +94,6 @@ function Landing({navigation}) {
                                         type: "set_pic",
                                         userPic: userDocument.profilePicture,
                                         userStatus: true,
-                                    });
-                                    dispatch({
-                                        type: "set_chats",
-                                        userChatsWith: userDocument.chatsWith,
                                     });
                                 });
                         }
