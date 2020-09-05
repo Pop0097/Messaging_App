@@ -8,7 +8,7 @@ import UserCard from '../components/usercard';
 
 function ChatList({ navigation }) {
 
-    const [{ userDoc }, dispatch] = useStateValue(); 
+    const [{ userDoc, userChatsWith }, dispatch] = useStateValue(); 
     const [searchResults, setSearchResults] = useState([]);
     const [modalIsOpen, setModalIsOpen] = useState(false);
 
@@ -25,22 +25,46 @@ function ChatList({ navigation }) {
     }
 
     const createChat = (receiver) => {
-        
+
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+        let docID = ''
+        for (let i = 0; i < 20; i++) {
+            docID += chars.charAt(Math.floor(Math.random() * chars.length))
+        }
+
+        //creates new chat            
+        db.collection('chats').doc(docID).set({ //new chat document in firestore
+            chatId: docID,
+            userId1: userDoc.id,
+            userEmail1: userDoc.email,
+            userName1: userDoc.name,
+            userId2: receiver.id,
+            userEmail2: receiver.email,
+            userName2: receiver.name,
+            created_at: Date.now(),
+            message_last_sent: Date.now(),
+            messages: {
+                from: userDoc.id,
+                sent_at: Date.now(),
+                message: "Hey!",
+            },
+        }).then(() => { //adds new document to the user's firestore pages
+            db.collection('users').doc(userDoc.email).set({
+                chats: [docID],
+                chatsWith: [receiver.email]
+            }, { merge: true })
+
+            db.collection('users').doc(receiver.email).set({
+                chats: [docID],
+                chatsWith: [userDoc.email]
+            }, { merge: true })  
+
+            closeModal();
+        })
+      
     }
 
-    // const displayCard = (searchedUser) => {
-    //     if(searchedUser.email !== userDoc.email) {
-    //         return (
-    //             <View>
-    //                 <TouchableOpacity onPress={createChat(searchedUser)}>
-    //                     <UserCard user={searchedUser} /> 
-    //                 </TouchableOpacity>
-    //             </View>
-    //         )
-    //     }
-    // }
-
-    const closeModal = () => {
+    const closeModal = (user) => {
         setModalIsOpen(false);
         setSearchResults([]);
     }
@@ -53,10 +77,10 @@ function ChatList({ navigation }) {
                     <View style={styles.modalContent}>
                         <MaterialIcons style={{...styles.modalToggle, ...styles.modalClose}} name="close" size={30} onPress={closeModal} />
                         <ChatForm findUsers={findUsers} />
-                        
+
                         {searchResults.map((user) => (
                             <View>
-                                <TouchableOpacity onPress={createChat(user)}>
+                                <TouchableOpacity onPress={() => createChat(user)}>
                                     <UserCard user={user} /> 
                                 </TouchableOpacity>
                             </View>

@@ -62,7 +62,9 @@ function Landing({navigation}) {
                                 profilePicture: result.additionalUserInfo.profile.picture,
                                 created_at: Date.now(),
                                 last_logged_in: Date.now(),
-                                search_keys: [result.user.email, result.user.email.substr(0, result.user.email.indexOf("@")), result.additionalUserInfo.profile.given_name, result.additionalUserInfo.profile.family_name, result.additionalUserInfo.profile.given_name.toLowerCase(), result.additionalUserInfo.profile.family_name.toLowerCase(), result.additionalUserInfo.profile.given_name.toUpperCase(), result.additionalUserInfo.profile.family_name.toUpperCase()]
+                                search_keys: [result.user.email, result.user.email.substr(0, result.user.email.indexOf("@")), result.additionalUserInfo.profile.given_name, result.additionalUserInfo.profile.family_name, result.additionalUserInfo.profile.given_name.toLowerCase(), result.additionalUserInfo.profile.family_name.toLowerCase(), result.additionalUserInfo.profile.given_name.toUpperCase(), result.additionalUserInfo.profile.family_name.toUpperCase()],
+                                chats: [],
+                                chatsWith: [],
                             })
                             .then(() => {
                                 getDocument(result.user.email).then((doc) => { //gets new user's document
@@ -73,10 +75,13 @@ function Landing({navigation}) {
 									});
 									dispatch({
 										type: "set_doc",
-										userDoc: doc,
-									});
+                                        userDoc: doc,
+                                    });
+                                    dispatch({
+                                        type: "set_chats",
+                                        userChatsWith: [],
+                                    });
 								})
-                                
                             })
                         } else {
                             db.collection("users").doc(result.user.email).update({
@@ -93,7 +98,11 @@ function Landing({navigation}) {
                                         type: "set_pic",
                                         userPic: userDocument.profilePicture,
                                         userStatus: true,
-                                    })
+                                    });
+                                    dispatch({
+                                        type: "set_chats",
+                                        userChatsWith: userDocument.chatsWith,
+                                    });
                                 });
                         }
                     }).catch((error) => {
