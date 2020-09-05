@@ -3,7 +3,6 @@ import { createStackNavigator } from 'react-navigation-stack';
 
 import ChatList from '../pages/chatlist';
 import Chat from '../pages/chat';
-import SearchList from '../pages/search';
 
 import Header from '../components/header';
 
@@ -24,14 +23,6 @@ const screens = {
             }
         }
     },
-    Search: {
-        screen: SearchList,
-        navigationOptions: () => {
-            return {
-                headerTitle: () => <Header title="Search" drawer="false"/>
-            }
-        }
-    }
 }
 
 const ChatStack = createStackNavigator(screens, {
