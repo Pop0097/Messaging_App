@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, FlatList, Modal, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, Modal, TouchableWithoutFeedback, Keyboard, CheckBox } from 'react-native';
 import db, { provider, auth } from '../firebase';
+import firebase from 'firebase/app';
 import { useStateValue } from '../stateprovider';
 import { MaterialIcons } from '@expo/vector-icons';
 import ChatForm from '../components/chatform';
@@ -49,19 +50,24 @@ function ChatList({ navigation }) {
                 message: "Hey!",
             },
         }).then(() => { //adds new document to the user's firestore pages
-            db.collection('users').doc(userDoc.email).set({
-                chats: [docID],
-                chatsWith: [receiver.email]
-            }, { merge: true })
+        
+            db.collection('users').doc(userDoc.email).update({
+                chats: firebase.firestore.FieldValue.arrayUnion(docID),
+                chatsWith: firebase.firestore.FieldValue.arrayUnion(receiver.email),
+            }).then(() => {
+                dispatch({
+                    type: "set_chats",
+                    userChatsWith: userDoc.chatsWith,
+                })
+            })
 
-            db.collection('users').doc(receiver.email).set({
-                chats: [docID],
-                chatsWith: [userDoc.email]
-            }, { merge: true })  
+            db.collection('users').doc(receiver.email).update({
+                chats: firebase.firestore.FieldValue.arrayUnion(docID),
+                chatsWith: firebase.firestore.FieldValue.arrayUnion(userDoc.email),
+            })  
 
             closeModal();
         })
-      
     }
 
     const closeModal = (user) => {
