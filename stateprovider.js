@@ -4,7 +4,7 @@ const initialState = {
 	userStatus: false,
 	userPic: "",
     search: "",
-	userDoc: "",
+	userDoc: null,
 };
 
 const reducer = (state, action) => {

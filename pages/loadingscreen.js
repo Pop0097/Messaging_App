@@ -1,32 +1,56 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Text, View, ActivityIndicator, StyleSheet } from 'react-native';
 import firebase from 'firebase';
+import db from '../firebase';
+import { useStateValue } from '../stateprovider';
 
-class LoadingScreen extends Component { 
 
-    componentDidMount() {
-        this.checkIfLoggedIn();
-    }
+function LoadingScreen({ navigation })  { 
 
-    checkIfLoggedIn = () => {
-        firebase.auth().onAuthStateChanged(function(user) {
+    const [{ userDoc }, dispatch] = useStateValue();
+
+    function getDocument(email) {
+		return new Promise((resolve, reject) => {
+			var userDocument;
+			db.collection("users").doc(email).get().then(documentSnapshot => {
+				if(documentSnapshot.exists) {
+					userDocument = documentSnapshot.data(); 
+					resolve(userDocument);
+				} 
+			});
+		})
+	}
+
+    useEffect(() => {
+        firebase.auth().onAuthStateChanged(user => {
             if(user) {
-                this.props.navigation.navigate("AuthenticatedDrawer");
+                getDocument(user.email)
+                    .then((doc) => { //gets new user's document
+                        dispatch({
+                            type: "set_pic",
+                            userPic: user.photoURL,
+                            userStatus: true,
+                        });
+                        dispatch({
+                            type: "set_doc",
+                            userDoc: doc,
+                        });
+                    })
+                    .then(() => {
+                        navigation.navigate("AuthenticatedDrawer");
+                    })
             } else {
-                this.props.navigation.navigate("LandingStack");
+                navigation.navigate("LandingStack");
             }   
-        }.bind(this))
-    }
+        });
+    })
 
-    render(){
-        return(
-            <View style={styles.container}>
-                <ActivityIndicator size="large" />
-                <Text>Loading App</Text> 
-            </View>
-        )
-    }
-
+    return(
+        <View style={styles.container}>
+            <ActivityIndicator size="large" />
+            <Text>Loading App</Text> 
+        </View>
+    )
 }
 
 export default LoadingScreen;
