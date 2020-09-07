@@ -1,16 +1,19 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Card from './card'
+import { useStateValue } from '../stateprovider';
 
-function ChatCard({ navigation, chat, current_email }) {
+function ChatCard({ chat }) {
+
+    const [{ userDoc }, dispatch] = useStateValue();
 
     var chat_with;
-    if(chat.userEmail1 === current_email) {
-        chat_with = chat.userEmail1;
-    } else {
+    if(chat.userEmail1 == userDoc.email) {
         chat_with = chat.userEmail2;
+    } else {
+        chat_with = chat.userEmail1;
     }
-    
+
     return(
         <View>
             <Card>

@@ -132,7 +132,7 @@ function ChatList({ navigation }) {
             {chats.map((chat) => (
                 <View>
                     <TouchableOpacity onPress={() => openChat(chat)}>
-                        <ChatCard chat={chat} email={current_email}  />
+                        <ChatCard chat={chat} />
                     </TouchableOpacity>
                 </View>
             ))}
