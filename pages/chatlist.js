@@ -6,12 +6,26 @@ import { useStateValue } from '../stateprovider';
 import { MaterialIcons } from '@expo/vector-icons';
 import ChatForm from '../components/chatform';
 import UserCard from '../components/usercard';
+import ChatCard from '../components/chatcard';
+
 
 function ChatList({ navigation }) {
 
-    const [{ userDoc, userChatsWith }, dispatch] = useStateValue(); 
+    const [{ userDoc }, dispatch] = useStateValue(); 
     const [searchResults, setSearchResults] = useState([]);
     const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [chats, setChats] = useState([]);
+    
+    var current_email = userDoc.email;
+
+    function resetUserDoc() {
+        db.collection("users").doc(email).get().then(doc => {
+            dispatch({
+                type: "set_doc",
+                userDoc: doc.data(),
+            })
+        })
+    }
 
     //Trying to get the search feature to work so we can create a chat. 
     const findUsers = ({ email }) => {
@@ -45,6 +59,7 @@ function ChatList({ navigation }) {
                 userName2: receiver.name,
                 created_at: Date.now(),
                 message_last_sent: Date.now(),
+                users: [userDoc.email, receiver.email],
                 messages: {
                     from: userDoc.id,
                     sent_at: Date.now(),
@@ -55,7 +70,7 @@ function ChatList({ navigation }) {
                 db.collection('users').doc(userDoc.email).update({
                     chats: firebase.firestore.FieldValue.arrayUnion(docID),
                     chatsWith: firebase.firestore.FieldValue.arrayUnion(receiver.email),
-                })
+                }).then(() => resetUserDoc());
 
                 db.collection('users').doc(receiver.email).update({
                     chats: firebase.firestore.FieldValue.arrayUnion(docID),
@@ -74,6 +89,18 @@ function ChatList({ navigation }) {
     const closeModal = () => {
         setModalIsOpen(false);
         setSearchResults([]);
+    }
+
+    useEffect(() => {
+        db.collection("chats").where("users", "array-contains", current_email).onSnapshot((snapshot) => {
+			setChats(snapshot.docs.map((doc) => doc.data()));
+		});
+    }, [chats]);
+
+    const openChat = (chosen_chat_doc) => {
+        navigation.navigate("Chat", {
+            chat: chosen_chat_doc
+        });
     }
 
     return(
@@ -99,13 +126,16 @@ function ChatList({ navigation }) {
 
             <MaterialIcons style={styles.modalToggle} name='add' size={30} onPress={() => setModalIsOpen(true)}/>
 
-            <TouchableOpacity onPress={() => navigation.navigate("Chat")} >
-                <View>
-                    <Text> This is the Chat List! </Text>
-                </View>
-            </TouchableOpacity>
             <Text>{ userDoc.name } </Text> 
-            <Text> { userDoc.chatsWith } </Text>
+            <Text> { current_email } </Text>
+
+            {chats.map((chat) => (
+                <View>
+                    <TouchableOpacity onPress={() => openChat(chat)}>
+                        <ChatCard chat={chat} email={current_email}  />
+                    </TouchableOpacity>
+                </View>
+            ))}
 
         </View>
     );
