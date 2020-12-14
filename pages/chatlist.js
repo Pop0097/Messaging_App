@@ -99,7 +99,8 @@ function ChatList({ navigation }) {
 
     const openChat = (chosen_chat_doc) => {
         navigation.navigate("Chat", {
-            chat: chosen_chat_doc
+            chat: chosen_chat_doc,
+            cool: "Je;;pdpekfpe",
         });
     }
 
@@ -127,7 +128,6 @@ function ChatList({ navigation }) {
             <MaterialIcons style={styles.modalToggle} name='add' size={30} onPress={() => setModalIsOpen(true)}/>
 
             <Text>{ userDoc.name } </Text> 
-            <Text> { current_email } </Text>
 
             {chats.map((chat) => (
                 <View>
